@@ -1,0 +1,387 @@
+---
+title: "Company Financials Dataset Analysis"
+author: "Na Zhou"
+date: 9 Dec 2024
+format: 
+  revealjs:
+    slideSize: [1920, 1080]
+    footer: Data Source:https://www.kaggle.com/datasets/atharvaarya25/financials/data
+    transition: slide
+    title-slide-attributes: 
+      data-background-image: background_2.jpg
+background-image: background_2.jpg
+editor: visual
+---
+## {background-image=background_2.jpg}
+::: {.callout-note title="Goal"}
+In this presentation, I'll explore this Company Financials Dataset from Kaggle using the EDA approach.
+:::
+##
+First, Load all the libraries that are relevant and set ggplot2 theme globally
+
+```{r}
+#| label: setup
+#| echo: true
+#| message: false
+
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(naniar)
+library(DataExplorer)
+library(ggplot2)
+library(lubridate)
+library(GGally)
+library(summarytools)
+theme_set(theme_minimal())
+```
+## 
+Get the data from absolute local path
+```{r}
+#| echo: true
+financials <- read_csv("/Users/na/Documents/R_course/Scripts/DSScripts/financials.csv")
+```
+Inspect data to get an idea what are in this dataset
+```{r}
+head(financials,10)
+str(financials)
+```
+## {background-image=background_2.jpg} 
+Skim data, there are dollar value data presented as characters and also include **"$"**, **","**, **"-"**sign in the values, therefore this dataset needs to be cleaned first
+
+::: {.callout-tip title="Header names clarification"}
+Header **"COGS"** stands for Cost of Goods Sold
+
+Header **"Segment"** This stands for a component of a business that generates its own revenues and creates its own product, product lines, or service offerings. Segments typically have discrete associated costs and operations. Segments are also referred to as "business segments."
+:::
+##
+Clean column names by removing leading/trailing spaces
+
+```{r}
+#| echo: true
+colnames(financials) <- gsub("^\\s+|\\s+$", "", colnames(financials))
+head(financials,20)
+```
+## 
+Identify columns with dollar values (e.g., " Units Sold ", " Gross Sales ")
+```{r}
+#| echo: true
+dollar_columns <- c("Units Sold", "Manufacturing Price", "Sale Price", "Gross Sales", "Discounts", "Sales", "COGS", "Profit")
+```
+Using **lapply** function to remove **"$"** and **","** from these dollar columns, replace **"-"** with **NA** and convert them into numeric datatype
+
+```{r}
+#| echo: true
+#| output-location: slide
+financials[dollar_columns] <- lapply(financials[dollar_columns], function(x) {
+  x <- gsub("[$,]", "", x)        # Remove dollar signs and commas
+  x <- ifelse(x == "-", NA, x)    # Replace '-' with NA
+  as.numeric(x)                   # Convert to numeric
+  })
+head(financials,20)
+```
+
+##
+Is there any missing data?
+
+```{r}
+#| echo: true
+vis_miss(financials)
+gg_miss_var(financials)
+missing_values <- which(is.na(financials), arr.ind = TRUE)
+missing_values
+```
+
+##
+Handling Missing Data
+Treat **NA** values in both **Profit** and **Discount** columns as 0 as it makes sense that these missing values are no profit and no discount at all in the context and maintain the dataset size
+```{r}
+#| echo: true
+financials$Profit[is.na(financials$Profit)] <- 0
+financials$Discounts[is.na(financials$Discounts)] <- 0
+head(financials)
+```
+##
+Check on duplicates
+```{r}
+#| echo: true
+duplicates_count <- financials |> 
+                    duplicated() |> 
+                    table()
+duplicates_count
+```
+So far, the dataset "financials.csv" is clean and tidy
+
+##
+Statistic summary of Dataset
+```{r}
+#| echo: true
+#| output-location: slide
+df_summary <- dfSummary(financials)
+print(df_summary, method = "render")
+```
+## {background-image=Data_Frame_Summary_1.png  background-size="contain"}
+## {background-image=Data_Frame_Summary_2.png  background-size="contain"}
+## {background-image=Data_Frame_Summary_3.png  background-size="contain"}
+
+##
+Detect outliers
+```{r}
+#| echo: true
+# Function to detect outliers based on IQR
+detect_outliers <- function(data_column) {
+  Q1 <- quantile(data_column, 0.25, na.rm = TRUE)
+  Q3 <- quantile(data_column, 0.75, na.rm = TRUE)
+  IQR_value <- IQR(data_column, na.rm = TRUE)
+  
+  # Define outlier thresholds
+  lower_bound <- Q1 - 1.5 * IQR_value
+  upper_bound <- Q3 + 1.5 * IQR_value
+  
+  # Identify outliers
+  outlier_indices <- which(data_column < lower_bound | data_column > upper_bound)
+  num_outliers <- length(outlier_indices)
+  total_count <- length(data_column)
+  
+  # Calculate the fraction of outliers
+  fraction <- num_outliers / total_count
+  
+  return(fraction)
+}
+financials_numeric <- financials |> 
+                      select(`Units Sold`, `Manufacturing Price`, `Sale Price`, `Gross Sales`, Discounts, Sales, COGS, Profit)
+# Apply the function to each numeric column in the selected data frame
+outlier_fractions <- sapply(financials_numeric, detect_outliers)
+
+# Display the fractions of outliers per column
+print(outlier_fractions)
+```
+##
+Looks like all outliers fraction is small compare to data in each column, therefore I'm not going to remove these data
+
+##
+How does Sales and Profit change by month?
+
+Convert date column into "Year-Month" format
+```{r}
+#| echo: true
+financials <- financials |> 
+  mutate(
+  # Convert 'Date' column from character to Date type
+    Date = dmy(Date),   # Use dmy() for day-month-year format
+    # Create a Year-Month column
+    YearMonth = format(Date, "%Y-%b")  # Format as "2014-Jan"
+  )
+head(financials, 20)
+```
+
+Summarize Profit and Sales by YearMonth
+```{r}
+#| echo: true
+monthly_summary <- financials |>
+  group_by(YearMonth) |>
+  summarise(
+    Total_Profit = sum(Profit, na.rm = TRUE),
+    Total_Sales = sum(Sales, na.rm = TRUE)
+  ) |>
+  mutate(
+    # Create a proper Date column for sorting
+    DateSort = as.Date(paste0(YearMonth, "-01"), format = "%Y-%b-%d")
+  ) |> 
+  arrange(DateSort) |>  # Arrange by DateSort for proper chronological order
+  select(-DateSort)  # Remove DateSort column if not needed
+monthly_summary
+```
+##
+Ensure YearMonth is in ordered format
+```{r}
+#| echo: true
+monthly_summary <- monthly_summary |>
+  mutate(YearMonth = factor(YearMonth, levels = unique(YearMonth)))  # Ensures correct order
+monthly_summary
+```
+##
+Plot Profit and Sales Trends Over Months
+```{r}
+#| echo: true
+#| output-location: slide
+ggplot(monthly_summary, aes(x = YearMonth)) +
+  geom_point(aes(y = Total_Profit, color = "Profit"), size = 1) +
+  geom_point(aes(y = Total_Sales, color = "Sales"), size = 1) +
+  geom_line(aes(y = Total_Profit, color = "Profit", group = 1), size = 1) +
+  geom_line(aes(y = Total_Sales, color = "Sales", group = 1), size = 1) +
+  labs(
+    title = "Profit and Sales Trends Over Months",
+    x = "Month",
+    y = "Dollar",
+    color = "Metric"
+  )
+```
+##
+In this line chart you can see Sales is going up and down with the highest peaks in October and December in 2014. As well the profit was the highest in these 2 months.
+
+2013-Sep and 2014-Nov have the lowest Sales, whereas Profit was lowest in March 2014 and November 2014.
+
+From this chart, we can see Sales fluctuate more over different months compared with Profit.
+
+##
+Plot Product vs  Gross Sales, Manufacturing Price, Profit, Discount, Sales & COGS
+Aggregate the Data
+```{r}
+#| echo: true
+financials_product <- financials |> 
+  group_by(Product) |> 
+  summarise(
+    Gross_Sales = sum(`Gross Sales`, na.rm = TRUE),
+    Manufacturing_Price = sum(`Manufacturing Price`, na.rm = TRUE),
+    Profit = sum(Profit, na.rm = TRUE),
+    Discounts = sum(Discounts, na.rm = TRUE),
+    Sales = sum(Sales, na.rm = TRUE),
+    COGS = sum(COGS, na.rm = TRUE)
+  )
+financials_product
+```
+
+##
+Reshape the data to a long format using **pivot_longer()**
+```{r}
+#| echo: true
+financials_long <- financials_product |> 
+  pivot_longer(
+    cols = -Product,
+    names_to = "Metric",
+    values_to = "Value"
+  )
+financials_long
+```
+##
+Create a plot
+```{r}
+#| echo: true
+#| output-location: slide
+ggplot(financials_long, aes(x = Product, y = Value, group = Metric, color = Metric)) +
+  geom_line(aes(linetype = Metric), size = 1, linetype = "solid") +
+  geom_point(size = 2) +  # Optional: add points for better visibility
+  labs(
+    title = "Product vs Gross Sales, Manufacturing Price, Profit, Discounts, Sales & COGS",
+    x = "Product",
+    y = "Value",
+    color = "Metric",
+    linetype = "Metric"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
+```
+##
+This line chart showed that COGS, Sales and Gross_Sales change together, whereas Profit, Discounts and Manufacturing Price fluctuate the same way. Among all 6 products, Paseo peaks in all metrics, whereas Carretera is at trough across metrics
+
+##
+Plot Country vs  Gross Sales, Manufacturing Price, Profit, Discount, Sales & COGS
+Aggregate the Data
+```{r}
+#| echo: true
+financials_country <- financials |> 
+  group_by(Country) |> 
+  summarise(
+    Gross_Sales = sum(`Gross Sales`, na.rm = TRUE),
+    Manufacturing_Price = sum(`Manufacturing Price`, na.rm = TRUE),
+    Profit = sum(Profit, na.rm = TRUE),
+    Discounts = sum(Discounts, na.rm = TRUE),
+    Sales = sum(Sales, na.rm = TRUE),
+    COGS = sum(COGS, na.rm = TRUE)
+  )
+financials_country
+```
+##
+Reshape the data to a long format using **pivot_longer()**
+```{r}
+#| echo: true
+financials_long_country <- financials_country |> 
+  pivot_longer(
+    cols = -Country,
+    names_to = "Metric",
+    values_to = "Value"
+  )
+financials_long_country
+```
+##
+Create a country plot
+```{r}
+#| echo: true
+#| output-location: slide
+ggplot(financials_long_country, aes(x = Country, y = Value, group = Metric, color = Metric)) +
+  geom_line(aes(linetype = Metric), size = 1, linetype = "solid") +
+  geom_point(size = 2) +  # Optional: add points for better visibility
+  labs(
+    title = "Country vs Gross Sales, Manufacturing Price, Profit, Discounts, Sales & COGS",
+    x = "Country",
+    y = "Value",
+    color = "Metric",
+    linetype = "Metric"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
+```
+##
+Similarly with previous line chart, COGS, Sales and Gross_Sales seems move together for different countries, whereas Profit, Discounts and Manufacturing Price are in the same cluster. In this chart, US seems have the highest COGS, Sales and Gross Sales whereas Mexico seems have lowest metrics regarding COGS, Sales and Gross Sales. The Profit, Discounts and Manufacturing Price doesn't change much across different countries.
+## 
+Correlation Analysis
+Select interested columns
+```{r}
+#| echo: true
+selected_columns <- financials[, c("Country", "Profit", "Sales", "COGS", "Gross Sales", "Sale Price")]
+```
+##
+Generate pairwise correlation plots in different Countries
+```{r}
+#| echo: true
+ggpairs(
+  data = selected_columns,
+  aes(color = Country, alpha = 0.6),
+  upper = list(continuous = wrap("cor", size = 3)),
+  lower = list(continuous = wrap("smooth", se = FALSE, alpha = 0.5)),
+  diag = list(continuous = wrap("densityDiag", alpha = 0.4))
+) +
+  theme_classic()
+```
+
+##
+Generate pairwise plots in different Products
+```{r}
+#| echo: true
+selected_columns_product <- financials[, c("Product", "Profit", "Sales", "COGS", "Gross Sales", "Sale Price")]
+ggpairs(
+  data = selected_columns_product,
+  aes(color = Product, alpha = 0.6),
+  upper = list(continuous = wrap("cor", size = 3)),
+  lower = list(continuous = wrap("smooth", se = FALSE, alpha = 0.5)),
+  diag = list(continuous = wrap("densityDiag", alpha = 0.4))
+) +
+  theme_classic()
+```
+##
+This pairwise correlation plots in different Products is very similar with the previous plot in different Country, where Sales vs COGS, Sales vs Gross Sales and COGS vs Gross Sales has much higher correlation coefficient both in graph and numbers
+
+##
+Generate a rmd report for selected columns
+```{r}
+#| echo: true
+#| output-location: slide
+financials_report <- financials |> 
+  select(Profit, Sales, COGS, `Gross Sales`, `Sale Price`) |> 
+  relocate(Profit, COGS) |> 
+  arrange(desc(Profit)) 
+data_profiling_report <- create_report(financials_report)
+data_profiling_report
+```
+## {background-image=Data_Profiling_Report_1.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_2.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_3.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_4.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_5.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_6.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_7.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_8.png  background-size="contain"}
+## {background-image=Data_Profiling_Report_9.png  background-size="contain"}
+
+##
+As shown in the univariate distribution graph, Sale Price is much more dispersed than other variables.
+Correlation Analysis shows that there's much higher correlation between each pair of Gross Sales, Sales and COGS, which generates the similar conclusion with previous pairwise correlation plots

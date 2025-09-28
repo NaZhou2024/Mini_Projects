@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="financials_files/libs/clipboard/clipboard.min.js"></script>
+<script src="financials_files/libs/quarto-html/tabby.min.js"></script>
+<script src="financials_files/libs/quarto-html/popper.min.js"></script>
+<script src="financials_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="financials_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="financials_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="financials_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="financials_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.5.57">
+
+  <meta name="author" content="Na Zhou">
+  <meta name="dcterms.date" content="2024-12-09">
+  <title>Company Financials Dataset Analysis</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="financials_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="financials_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="financials_files/libs/revealjs/dist/theme/quarto.css">
+  <link href="financials_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="financials_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="financials_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="financials_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-titled.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-titled) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-titled.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-titled .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-titled .callout-title  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-titled.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-titled.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-title {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-title {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-title {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-titled .callout-body > .callout-content > :last-child {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .callout.callout-titled .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-titled) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-title {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-title {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-title {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-title {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-title {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="background_2.jpg" class="quarto-title-block center">
+  <h1 class="title">Company Financials Dataset Analysis</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Na Zhou 
+</div>
+</div>
+</div>
+
+  <p class="date">2024-12-09</p>
+</section>
+<section id="section" class="slide level2" data-background-image="background_2.jpg">
+<h2></h2>
+<div title="Goal">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Goal</strong></p>
+</div>
+<div class="callout-content">
+<p>In this presentation, I’ll explore this Company Financials Dataset from Kaggle using the EDA approach.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<p>First, Load all the libraries that are relevant and set ggplot2 theme globally</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href=""></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href=""></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-4"><a href=""></a><span class="fu">library</span>(naniar)</span>
+<span id="cb1-5"><a href=""></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb1-6"><a href=""></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href=""></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-8"><a href=""></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-9"><a href=""></a><span class="fu">library</span>(summarytools)</span>
+<span id="cb1-10"><a href=""></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<p>Get the data from absolute local path</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>financials <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/Users/na/Documents/R_course/Scripts/DSScripts/financials.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Inspect data to get an idea what are in this dataset</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 16
+   Segment    Country Product `Discount Band` `Units Sold` `Manufacturing Price`
+   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;        &lt;chr&gt;                
+ 1 Government Canada  Carret… None            $1,618.50    $3.00                
+ 2 Government Germany Carret… None            $1,321.00    $3.00                
+ 3 Midmarket  France  Carret… None            $2,178.00    $3.00                
+ 4 Midmarket  Germany Carret… None            $888.00      $3.00                
+ 5 Midmarket  Mexico  Carret… None            $2,470.00    $3.00                
+ 6 Government Germany Carret… None            $1,513.00    $3.00                
+ 7 Midmarket  Germany Montana None            $921.00      $5.00                
+ 8 Channel P… Canada  Montana None            $2,518.00    $5.00                
+ 9 Government France  Montana None            $1,899.00    $5.00                
+10 Channel P… Germany Montana None            $1,545.00    $5.00                
+# ℹ 10 more variables: `Sale Price` &lt;chr&gt;, `Gross Sales` &lt;chr&gt;,
+#   Discounts &lt;chr&gt;, Sales &lt;chr&gt;, COGS &lt;chr&gt;, Profit &lt;chr&gt;, Date &lt;chr&gt;,
+#   `Month Number` &lt;dbl&gt;, `Month Name` &lt;chr&gt;, Year &lt;dbl&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [700 × 16] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ Segment            : chr [1:700] "Government" "Government" "Midmarket" "Midmarket" ...
+ $ Country            : chr [1:700] "Canada" "Germany" "France" "Germany" ...
+ $ Product            : chr [1:700] "Carretera" "Carretera" "Carretera" "Carretera" ...
+ $ Discount Band      : chr [1:700] "None" "None" "None" "None" ...
+ $ Units Sold         : chr [1:700] "$1,618.50" "$1,321.00" "$2,178.00" "$888.00" ...
+ $ Manufacturing Price: chr [1:700] "$3.00" "$3.00" "$3.00" "$3.00" ...
+ $ Sale Price         : chr [1:700] "$20.00" "$20.00" "$15.00" "$15.00" ...
+ $ Gross Sales        : chr [1:700] "$32,370.00" "$26,420.00" "$32,670.00" "$13,320.00" ...
+ $ Discounts          : chr [1:700] "$-" "$-" "$-" "$-" ...
+ $ Sales              : chr [1:700] "$32,370.00" "$26,420.00" "$32,670.00" "$13,320.00" ...
+ $ COGS               : chr [1:700] "$16,185.00" "$13,210.00" "$21,780.00" "$8,880.00" ...
+ $ Profit             : chr [1:700] "$16,185.00" "$13,210.00" "$10,890.00" "$4,440.00" ...
+ $ Date               : chr [1:700] "01/01/2014" "01/01/2014" "01/06/2014" "01/06/2014" ...
+ $ Month Number       : num [1:700] 1 1 6 6 6 12 3 6 6 6 ...
+ $ Month Name         : chr [1:700] "January" "January" "June" "June" ...
+ $ Year               : num [1:700] 2014 2014 2014 2014 2014 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   Segment = col_character(),
+  ..   Country = col_character(),
+  ..   Product = col_character(),
+  ..   `Discount Band` = col_character(),
+  ..   `Units Sold` = col_character(),
+  ..   `Manufacturing Price` = col_character(),
+  ..   `Sale Price` = col_character(),
+  ..   `Gross Sales` = col_character(),
+  ..   Discounts = col_character(),
+  ..   Sales = col_character(),
+  ..   COGS = col_character(),
+  ..   Profit = col_character(),
+  ..   Date = col_character(),
+  ..   `Month Number` = col_double(),
+  ..   `Month Name` = col_character(),
+  ..   Year = col_double()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+</div>
+</section>
+<section id="section-3" class="slide level2" data-background-image="background_2.jpg">
+<h2></h2>
+<p>Skim data, there are dollar value data presented as characters and also include <strong>“$”</strong>, <strong>“,”</strong>, <strong>“-”</strong>sign in the values, therefore this dataset needs to be cleaned first</p>
+<div title="Header names clarification">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Header names clarification</strong></p>
+</div>
+<div class="callout-content">
+<p>Header <strong>“COGS”</strong> stands for Cost of Goods Sold</p>
+<p>Header <strong>“Segment”</strong> This stands for a component of a business that generates its own revenues and creates its own product, product lines, or service offerings. Segments typically have discrete associated costs and operations. Segments are also referred to as “business segments.”</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+<p>Clean column names by removing leading/trailing spaces</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a><span class="fu">colnames</span>(financials) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">s+|</span><span class="sc">\\</span><span class="st">s+$"</span>, <span class="st">""</span>, <span class="fu">colnames</span>(financials))</span>
+<span id="cb5-2"><a href=""></a><span class="fu">head</span>(financials,<span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 16
+   Segment    Country Product `Discount Band` `Units Sold` `Manufacturing Price`
+   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;        &lt;chr&gt;                
+ 1 Government Canada  Carret… None            $1,618.50    $3.00                
+ 2 Government Germany Carret… None            $1,321.00    $3.00                
+ 3 Midmarket  France  Carret… None            $2,178.00    $3.00                
+ 4 Midmarket  Germany Carret… None            $888.00      $3.00                
+ 5 Midmarket  Mexico  Carret… None            $2,470.00    $3.00                
+ 6 Government Germany Carret… None            $1,513.00    $3.00                
+ 7 Midmarket  Germany Montana None            $921.00      $5.00                
+ 8 Channel P… Canada  Montana None            $2,518.00    $5.00                
+ 9 Government France  Montana None            $1,899.00    $5.00                
+10 Channel P… Germany Montana None            $1,545.00    $5.00                
+11 Midmarket  Mexico  Montana None            $2,470.00    $5.00                
+12 Enterprise Canada  Montana None            $2,665.50    $5.00                
+13 Small Bus… Mexico  Montana None            $958.00      $5.00                
+14 Government Germany Montana None            $2,146.00    $5.00                
+15 Enterprise Canada  Montana None            $345.00      $5.00                
+16 Midmarket  United… Montana None            $615.00      $5.00                
+17 Government Canada  Paseo   None            $292.00      $10.00               
+18 Midmarket  Mexico  Paseo   None            $974.00      $10.00               
+19 Channel P… Canada  Paseo   None            $2,518.00    $10.00               
+20 Government Germany Paseo   None            $1,006.00    $10.00               
+# ℹ 10 more variables: `Sale Price` &lt;chr&gt;, `Gross Sales` &lt;chr&gt;,
+#   Discounts &lt;chr&gt;, Sales &lt;chr&gt;, COGS &lt;chr&gt;, Profit &lt;chr&gt;, Date &lt;chr&gt;,
+#   `Month Number` &lt;dbl&gt;, `Month Name` &lt;chr&gt;, Year &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="section-5" class="slide level2">
+<h2></h2>
+<p>Identify columns with dollar values (e.g., ” Units Sold “,” Gross Sales “)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>dollar_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Units Sold"</span>, <span class="st">"Manufacturing Price"</span>, <span class="st">"Sale Price"</span>, <span class="st">"Gross Sales"</span>, <span class="st">"Discounts"</span>, <span class="st">"Sales"</span>, <span class="st">"COGS"</span>, <span class="st">"Profit"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using <strong>lapply</strong> function to remove <strong>“$”</strong> and <strong>“,”</strong> from these dollar columns, replace <strong>“-”</strong> with <strong>NA</strong> and convert them into numeric datatype</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>financials[dollar_columns] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(financials[dollar_columns], <span class="cf">function</span>(x) {</span>
+<span id="cb8-2"><a href=""></a>  x <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"[$,]"</span>, <span class="st">""</span>, x)        <span class="co"># Remove dollar signs and commas</span></span>
+<span id="cb8-3"><a href=""></a>  x <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="st">"-"</span>, <span class="cn">NA</span>, x)    <span class="co"># Replace '-' with NA</span></span>
+<span id="cb8-4"><a href=""></a>  <span class="fu">as.numeric</span>(x)                   <span class="co"># Convert to numeric</span></span>
+<span id="cb8-5"><a href=""></a>  })</span>
+<span id="cb8-6"><a href=""></a><span class="fu">head</span>(financials,<span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-5-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 16
+   Segment    Country Product `Discount Band` `Units Sold` `Manufacturing Price`
+   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                  &lt;dbl&gt;                 &lt;dbl&gt;
+ 1 Government Canada  Carret… None                   1618.                     3
+ 2 Government Germany Carret… None                   1321                      3
+ 3 Midmarket  France  Carret… None                   2178                      3
+ 4 Midmarket  Germany Carret… None                    888                      3
+ 5 Midmarket  Mexico  Carret… None                   2470                      3
+ 6 Government Germany Carret… None                   1513                      3
+ 7 Midmarket  Germany Montana None                    921                      5
+ 8 Channel P… Canada  Montana None                   2518                      5
+ 9 Government France  Montana None                   1899                      5
+10 Channel P… Germany Montana None                   1545                      5
+11 Midmarket  Mexico  Montana None                   2470                      5
+12 Enterprise Canada  Montana None                   2666.                     5
+13 Small Bus… Mexico  Montana None                    958                      5
+14 Government Germany Montana None                   2146                      5
+15 Enterprise Canada  Montana None                    345                      5
+16 Midmarket  United… Montana None                    615                      5
+17 Government Canada  Paseo   None                    292                     10
+18 Midmarket  Mexico  Paseo   None                    974                     10
+19 Channel P… Canada  Paseo   None                   2518                     10
+20 Government Germany Paseo   None                   1006                     10
+# ℹ 10 more variables: `Sale Price` &lt;dbl&gt;, `Gross Sales` &lt;dbl&gt;,
+#   Discounts &lt;dbl&gt;, Sales &lt;dbl&gt;, COGS &lt;dbl&gt;, Profit &lt;dbl&gt;, Date &lt;chr&gt;,
+#   `Month Number` &lt;dbl&gt;, `Month Name` &lt;chr&gt;, Year &lt;dbl&gt;</code></pre>
+</div>
+</div></section><section id="section-6" class="slide level2">
+<h2></h2>
+<p>Is there any missing data?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="fu">vis_miss</span>(financials)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="financials_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">gg_miss_var</span>(financials)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="financials_files/figure-revealjs/unnamed-chunk-7-2.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href=""></a>missing_values <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">is.na</span>(financials), <span class="at">arr.ind =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-2"><a href=""></a>missing_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       row col
+  [1,]   1   9
+  [2,]   2   9
+  [3,]   3   9
+  [4,]   4   9
+  [5,]   5   9
+  [6,]   6   9
+  [7,]   7   9
+  [8,]   8   9
+  [9,]   9   9
+ [10,]  10   9
+ [11,]  11   9
+ [12,]  12   9
+ [13,]  13   9
+ [14,]  14   9
+ [15,]  15   9
+ [16,]  16   9
+ [17,]  17   9
+ [18,]  18   9
+ [19,]  19   9
+ [20,]  20   9
+ [21,]  21   9
+ [22,]  22   9
+ [23,]  23   9
+ [24,]  24   9
+ [25,]  25   9
+ [26,]  26   9
+ [27,]  27   9
+ [28,]  28   9
+ [29,]  29   9
+ [30,]  30   9
+ [31,]  31   9
+ [32,]  32   9
+ [33,]  33   9
+ [34,]  34   9
+ [35,]  35   9
+ [36,]  36   9
+ [37,]  37   9
+ [38,]  38   9
+ [39,]  39   9
+ [40,]  40   9
+ [41,]  41   9
+ [42,]  42   9
+ [43,]  43   9
+ [44,]  44   9
+ [45,]  45   9
+ [46,]  46   9
+ [47,]  47   9
+ [48,]  48   9
+ [49,]  49   9
+ [50,]  50   9
+ [51,]  51   9
+ [52,]  52   9
+ [53,]  53   9
+ [54,] 188  12
+ [55,] 190  12
+ [56,] 194  12
+ [57,] 201  12
+ [58,] 210  12
+ [59,] 233  12
+ [60,] 238  12
+ [61,] 239  12
+ [62,] 247  12
+ [63,] 248  12
+ [64,] 255  12
+ [65,] 259  12
+ [66,] 260  12
+ [67,] 280  12
+ [68,] 288  12
+ [69,] 289  12
+ [70,] 300  12
+ [71,] 332  12
+ [72,] 335  12
+ [73,] 345  12
+ [74,] 353  12
+ [75,] 355  12
+ [76,] 362  12
+ [77,] 371  12
+ [78,] 410  12
+ [79,] 412  12
+ [80,] 422  12
+ [81,] 426  12
+ [82,] 427  12
+ [83,] 436  12
+ [84,] 459  12
+ [85,] 460  12
+ [86,] 462  12
+ [87,] 472  12
+ [88,] 476  12
+ [89,] 478  12
+ [90,] 484  12
+ [91,] 486  12
+ [92,] 507  12
+ [93,] 520  12
+ [94,] 528  12
+ [95,] 530  12
+ [96,] 532  12
+ [97,] 533  12
+ [98,] 538  12
+ [99,] 539  12
+[100,] 549  12
+[101,] 565  12
+[102,] 592  12
+[103,] 607  12
+[104,] 609  12
+[105,] 627  12
+[106,] 632  12
+[107,] 648  12
+[108,] 660  12
+[109,] 667  12
+[110,] 668  12
+[111,] 669  12
+[112,] 677  12
+[113,] 685  12
+[114,] 687  12
+[115,] 693  12
+[116,] 694  12</code></pre>
+</div>
+</div>
+</section>
+<section id="section-7" class="slide level2">
+<h2></h2>
+<p>Handling Missing Data Treat <strong>NA</strong> values in both <strong>Profit</strong> and <strong>Discount</strong> columns as 0 as it makes sense that these missing values are no profit and no discount at all in the context and maintain the dataset size</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>financials<span class="sc">$</span>Profit[<span class="fu">is.na</span>(financials<span class="sc">$</span>Profit)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-2"><a href=""></a>financials<span class="sc">$</span>Discounts[<span class="fu">is.na</span>(financials<span class="sc">$</span>Discounts)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-3"><a href=""></a><span class="fu">head</span>(financials)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 16
+  Segment    Country Product  `Discount Band` `Units Sold` `Manufacturing Price`
+  &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;                  &lt;dbl&gt;                 &lt;dbl&gt;
+1 Government Canada  Carrete… None                   1618.                     3
+2 Government Germany Carrete… None                   1321                      3
+3 Midmarket  France  Carrete… None                   2178                      3
+4 Midmarket  Germany Carrete… None                    888                      3
+5 Midmarket  Mexico  Carrete… None                   2470                      3
+6 Government Germany Carrete… None                   1513                      3
+# ℹ 10 more variables: `Sale Price` &lt;dbl&gt;, `Gross Sales` &lt;dbl&gt;,
+#   Discounts &lt;dbl&gt;, Sales &lt;dbl&gt;, COGS &lt;dbl&gt;, Profit &lt;dbl&gt;, Date &lt;chr&gt;,
+#   `Month Number` &lt;dbl&gt;, `Month Name` &lt;chr&gt;, Year &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="section-8" class="slide level2">
+<h2></h2>
+<p>Check on duplicates</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>duplicates_count <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href=""></a>                    <span class="fu">duplicated</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb16-3"><a href=""></a>                    <span class="fu">table</span>()</span>
+<span id="cb16-4"><a href=""></a>duplicates_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+FALSE 
+  700 </code></pre>
+</div>
+</div>
+<p>So far, the dataset “financials.csv” is clean and tidy</p>
+</section>
+<section id="section-9" class="slide level2">
+<h2></h2>
+<p>Statistic summary of Dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href=""></a>df_summary <span class="ot">&lt;-</span> <span class="fu">dfSummary</span>(financials)</span>
+<span id="cb18-2"><a href=""></a><span class="fu">print</span>(df_summary, <span class="at">method =</span> <span class="st">"render"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-9-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output-display">
+<div class="container st-container">
+<h3>Data Frame Summary</h3>
+<h4>financials</h4>
+<strong>Dimensions</strong>: 700 x 16
+  <br><strong>Duplicates</strong>: 0
+<br>
+
+<table class="table table-striped table-bordered st-table st-table-striped st-table-bordered st-multiline caption-top" style="width:100%;" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>No</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Variable</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Stats / Values</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Freqs (% of Valid)</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Graph</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Valid</strong></th>
+<th class="st-protect-top-border" style="text-align: center;" data-quarto-table-cell-role="th"><strong>Missing</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Segment [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. Channel Partners</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. Enterprise</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. Government</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. Midmarket</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">5. Small Business</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">300</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">42.9%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAE0AAAB9CAQAAABNeiaWAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAA2klEQVR42u3Z0QnCMBSGUSPd0SGcR3dwyvqaFIT0prFXOd+bCHIgLeTHsl6ydj0bgHZsS/3huePBu5cZnBqwtF/dOn/iNcO1KfGBoqGhoaGhoaGh5aZtbrnfuL32Vurb+JTr/q5qTeIDRYvUvAaP03foR5odioaWLDQ0NDQ0NLS/o5nIvZnIo4V36KSqZyq4Q+fUvoSJDxQNDQ0NDQ0NDQ0tmB3amx06mv9DIyU+UDQ0NDQ0NDQ0NLRgdmhvduhodmikxAeKhoaGhoaGhoaGFuxXdmiuEh8oWqQ3QEod7+ufEIoAAAA9dEVYdGljYzpjb3B5cmlnaHQAQ29weXJpZ2h0IDIwMDcgQXBwbGUgSW5jLiwgYWxsIHJpZ2h0cyByZXNlcnZlZC6eZtwpAAAAI3RFWHRpY2M6ZGVzY3JpcHRpb24AR2VuZXJpYyBSR0IgUHJvZmlsZRqnOI4AAAAASUVORK5CYII=" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Country [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. Canada</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. France</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. Germany</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. Mexico</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">5. United States of America</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAACsAAAB9CAQAAACRg1KhAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAkElEQVRo3u3WMQ6DMAxAUQdxx96h94E7cEq6RkUsQU5r6XnL8gZn8G9nZMySohZj1/6xP1r0u92wEa9h9JixBCwWi8XOYb+uwzGmXKb156sNMxERvVRrtzO+bHsWZDoBi8Visb9g5UceqxOwWCwWW53VCXmsTsBisVhsdVYn5LE6AYvFYrHV2Rmd8PdLqMV+ANHnG65hcS1yAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Product [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. Amarilla</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. Carretera</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. Montana</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. Paseo</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">5. Velo</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">6. VTT</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">94</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">13.4%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">93</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">13.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">93</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">13.3%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">202</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">28.9%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">109</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">15.6%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">109</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">15.6%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAADgAAACVCAQAAACnDfGlAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAx0lEQVR42u3YzQnCQBRGUUfSo0VYj/ZglbqdoAnzL5mcbydCDvKyuBjel7G7DvZOAC7xh2fyQe8hB4kfu6y/uiU94FXxC+e/IRAIBAKBwK/EqImHtIU4cLLKKGOxcbIbPjp16SaoS4FAIBAIBLaZLm0+XfpzuhQIBAKBQOD+dGnzHaVLMxfdqqhL87Z+Eee/IRAIBAKBQF3aYcfq0pJ/TSu6tOwFm/+GQCAQCAQCdWmH6dKd6VIgEAgEAoFb+2+Xjtj8NxwOfgBKhSPMf6f1NgAAAD10RVh0aWNjOmNvcHlyaWdodABDb3B5cmlnaHQgMjAwNyBBcHBsZSBJbmMuLCBhbGwgcmlnaHRzIHJlc2VydmVkLp5m3CkAAAAjdEVYdGljYzpkZXNjcmlwdGlvbgBHZW5lcmljIFJHQiBQcm9maWxlGqc4jgAAAABJRU5ErkJggg==" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Discount Band [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. High</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. Low</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. Medium</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. None</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">245</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">35.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">160</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">22.9%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">242</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">34.6%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">53</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">7.6%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAEEAAABmCAQAAAA+VzRAAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAzklEQVRo3u3ZTQ6DIBiE4cF4R++g56l34JR14QZMmxb8YUjeb8cGn2QwYUJ4q/UMrQEQ9hnTxfrYwZjDF4I0PQKI2cogCAgQIECAAAEChA4Ih4tbrNvl1IT0xhqqtymd9KsGQRgQsrPwuqRHLIV5Xt4jyg+0QRAQIECAAAECBAgdEOgRkkUQEKRbqszvyctOgyeR419nEAQECBAgQIAAAUIHBKqMZBGEAeGvHlH6yHGC8LlH3H1EDYKAAAECBAgQIEDogODWI9qMQRAQJGkDE/wXfzBgv5wAAAA9dEVYdGljYzpjb3B5cmlnaHQAQ29weXJpZ2h0IDIwMDcgQXBwbGUgSW5jLiwgYWxsIHJpZ2h0cyByZXNlcnZlZC6eZtwpAAAAI3RFWHRpY2M6ZGVzY3JpcHRpb24AR2VuZXJpYyBSR0IgUHJvZmlsZRqnOI4AAAAASUVORK5CYII=" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Units Sold [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 1608.3 (867.4)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">200 ≤ 1542.5 ≤ 4492.5</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 1324.1 (0.5)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">510 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABhklEQVR42u3dQU6DUBRAUTHdY/eg69E9uEqdomkgR7D94D2zpgkpN30/AQJMn08Rz4/+AUdTMFQwdJl/mDZt6m1lOXzdtvkHmu/Y5ddbueG68N3Ho/d6J40kon/Y2tD9BziSW4buHGvcrmvYsuvit0dZ41rDUMFQwVDBUMFQwVDBUMFQwVDBUMHQHY8l1ywfnI9yaD5QsGOcfmwkUcFQwVDBUMFQwVDBUMFQwVDBUMHQQMeSy0a5bn6YYKNcN28kUcFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwdC3U9Td3rfuxzn9Uc6cj6uRRAVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQ4d5WNEWez4Z6l8E2/OxzY0kKhg6zUje60680wT7y9fszd9UeppgW8hNj61hqGBomo/ve7cw3/QyW8OmGplGEhUMFQx9AQgjIEgyGv/eAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">Manufacturing Price [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 96.5 (108.6)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3 ≤ 10 ≤ 260</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 245 (1.1)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">3</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">93</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">13.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">5</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">93</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">13.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">10</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">202</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">28.9%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">120</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">109</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">15.6%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">250</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">109</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">15.6%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">260</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">94</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">13.4%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAADgAAACVCAQAAACnDfGlAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAyklEQVR42u3aQQrCMBRFUSPdo4twPboHV6nTFGlJ0iSa9LyZCB7kd3ARw/vSd9fO3gnAJX7xTD7oPeQg8ccu67duSR/wOvAN578hEAgEAoHAr8Q4Eg9pC3HgZJVRxmLjZDd8NOrSTVCXAoFAIBAIrDNdWn2jdGnmolsVdWne1g/i/DcEAoFAIBCoSxtsrC4t+dX0QJeWPWDz3xAIBAKBQKAubTBdujNdCgQCgUAgcGu6tPpG6VL/LwUCgUAgEPhX4G+7tMfmv2F38APcsiPMwxBhOgAAAD10RVh0aWNjOmNvcHlyaWdodABDb3B5cmlnaHQgMjAwNyBBcHBsZSBJbmMuLCBhbGwgcmlnaHRzIHJlc2VydmVkLp5m3CkAAAAjdEVYdGljYzpkZXNjcmlwdGlvbgBHZW5lcmljIFJHQiBQcm9maWxlGqc4jgAAAABJRU5ErkJggg==" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">Sale Price [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 118.4 (136.8)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">7 ≤ 20 ≤ 350</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 288 (1.2)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">7</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">12</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">15</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">20</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">125</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">300</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">350</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">100</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">14.3%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAACIAAACsCAQAAAC09LbhAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAm0lEQVRo3u3VwQmEMBRF0UTs0R6mH+3BKsdtQIZv9MMEOe5c5EDeIrd+y/NvSjAGQub2Z+sY6FN/IKUsF4l90E0gEAiknF62/RZS22e1dhxsz42zSf6wa0+YdQcCgbwa0Z1gE8mAQCCQVER3gk10BwKBQFIR3Qk20R0IBAJJRXQn2ER3IBAIJBXRnWAT3YFAIJBUJL87f73OOMgB65smkOOzG7YAAAA9dEVYdGljYzpjb3B5cmlnaHQAQ29weXJpZ2h0IDIwMDcgQXBwbGUgSW5jLiwgYWxsIHJpZ2h0cyByZXNlcnZlZC6eZtwpAAAAI3RFWHRpY2M6ZGVzY3JpcHRpb24AR2VuZXJpYyBSR0IgUHJvZmlsZRqnOI4AAAAASUVORK5CYII=" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: left;">Gross Sales [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 182759.4 (254262.3)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1799 ≤ 37980 ≤ 1207500</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 261633.2 (1.4)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">550 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABdElEQVR42u3dy03DQBRAUYzcIz1APaQHqoStERPJ14lix5y7y1ejo5nx8k3fLyq97r2AZwtYDFhsXr64XLnQPqa9l7lvS5b590dvg69/7b3eQ+VIxoDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMWAxYDFgMXmrT/8HA6NOv/IqFVgY5y/Q6P+w8ioVWDr52mdf99tPpLjzj+qzKUfu/MOG3emg/oQsNsO6rG4HwJWIEYd6Xm8I9iI4fgPDZd+bMcddlvrD/R977unBRsf3vG7I9ytiNPyvy6mpA97X+BOjFou/RiwGLDYDyApIhc4qS/bAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">9</td>
+<td style="text-align: left;">Discounts [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 13150.4 (22962.9)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">0 ≤ 2585.2 ≤ 149677.5</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 15156 (1.7)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">515 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABbklEQVR42u3dUU6DQBRAUTHs0T3oeuweWKX+opCUa4oonPPXlkzIzbxJ/2b4eKJ4PvoF/hvBIsGicf7htnqgvQ1Hv+TR5lnGrz+9LB6ejn7bP8ZIRoJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJF4/1H3jfcqHid68g2BPt+/di08s11GMloww7bYjm2Zx3SBwW7zpA+KNjSWffcbsHOuucc+tFuO2xpy/+5nw7u2tr7HAG/GGztOtnl4G7Len/1aadTdJivenNL+qrXWehBo8ahHwkWCRZ9At1aHn9xVNBrAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">10</td>
+<td style="text-align: left;">Sales [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 169609.1 (236726.3)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1655.1 ≤ 35540.2 ≤ 1159200</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 245149.5 (1.4)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">559 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABeklEQVR42u3dTU7CUBSAUWvYo3vQ9cAeWKVOHNSkL+Hw00r5zgxJk+bLu7c46vT9FvG+9Q08m4KhgqHD/MNpuNC+pq1vdEvzLIe/X30sXnDe+o7/kUYSFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDB2uv/T4ku+ouSHYa76jppFEBUMXjuSxlwT+ujDY0rba964auWnpjyyfx308Ox8SbM/nsaWPHnLClt3nwbH1YK8YbPQzV/6+/WA3kmjFE3Yfo8Fea1SfLthogG1DXp/36YKNLG88y3tJxml+5al/gBZ9zkJONTI9JVHBUMHQD5CmIIUOMb28AAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">11</td>
+<td style="text-align: left;">COGS [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 145475.2 (203865.5)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">918 ≤ 22506.2 ≤ 950625</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 238117.5 (1.4)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">545 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABYElEQVR42u3dS0rEQBRAUSPZo3vQ9dh7cJU6jaCFJ6DPNPfMQjpQXLo+s9reHyIepwdwNQVDBUP78eG2XNBetunBTjlm2T+/evr2o7fpUf8TTUlUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMLT//KevJ69xu6/7kCDY6s6j1btV6OvFhGBn3dflUq1hqGCoYKhg6A8W/ZVzR5XJvXU42JmjyuzeOhzsnMmT3SWDTR6TLxls5bePye2SaDv+g2/dkv6l58NU3mpkmpKoYKhg6APxsRrra0GJWAAAAD10RVh0aWNjOmNvcHlyaWdodABDb3B5cmlnaHQgMjAwNyBBcHBsZSBJbmMuLCBhbGwgcmlnaHRzIHJlc2VydmVkLp5m3CkAAAAjdEVYdGljYzpkZXNjcmlwdGlvbgBHZW5lcmljIFJHQiBQcm9maWxlGqc4jgAAAABJRU5ErkJggg==" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">12</td>
+<td style="text-align: left;">Profit [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 25244.3 (41834.4)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">0 ≤ 9242.2 ≤ 262200</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 19856 (1.7)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">506 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABbklEQVR42u3dQW7CMBRAwabijtyhPQ/coadst0FYwg9RhSgzOyAg6ykO3v3l94Pic+sF7I1gkWDRaf3iOnygfS9bL3Jr6yyn24/Odxf/bL3aN2NLRoJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRYJFgkWCRafHl1wGw3uOO7pnIpjRPWu2ZCRYJFgkWCRYNPEvOXLco8aTwY571LAloyfvsJG5bXrZ+dDPFwYbbdNRnn1v5xcGG5mNc5manv0O9+E/B5s1Cnu+e2cu6/yDYO67t5b1L11NSR/6WkVcNGocKyLBIsGiPwR4IH9KuWyOAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">13</td>
+<td style="text-align: left;">Date [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. 01/06/2014</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. 01/10/2013</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. 01/10/2014</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. 01/12/2014</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">5. 01/01/2014</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">6. 01/02/2014</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">7. 01/03/2014</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">8. 01/04/2014</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">9. 01/05/2014</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">10. 01/07/2014</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">[ 6 others ]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">210</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">30.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAADoAAAELCAQAAAAi410fAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABI0lEQVR42u3cQQ4BQRCG0RpxR4dwHu7glGx7JEboLoV+/06EFymSb2W5xue3KzAnQvftg/OTAx+X96H2rffrpw4bL7sM+6Tz3BQKhUKhUGj/7nJlXJJsbWmDqaO7nq51Jr3pKbF7H6K6FwqFQqFQ6Pehujd19TfVvaMHhUKhUCj0R1Hdm7r6m+re0YNCoVAoFNo/CZq6edDN7h3VuZvounvzvsnz3BQKhUKh0D9DdW/q6m8qQaFQKBQKhUIjQvcmr/6muhcKhUKhUCg0InRv8upvqnuhUCgUCoVCI0L3Jq/+proXCoVCoVAoNCJ0b/Lqb6p7oVAoFAqFfh8qQVM3D/rSX4p1rfnCvPCXYj1b/yrmuSkUCoVCoX+G1nfvpzbPTUvQG3ewQRnWYLuvAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">14</td>
+<td style="text-align: left;">Month Number [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean (sd) : 7.9 (3.4)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">min ≤ med ≤ max:</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1 ≤ 9 ≤ 12</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">IQR (CV) : 4.5 (0.4)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle;">12 distinct values</td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAJgAAABuCAQAAABxABKuAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAABdklEQVR42u3cUUrDQBRAUSPdY/eg66l7cJX1SxmFlJwkEiP3/LWQTHJh+vOYTveniOejH+BsCoYKhi7jh+nop9nN7cFP8yu/5nizi158FteZ79833rctiQqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqG/u1cUj0a/Y4T7oJ9WTb6bUuigqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqGCoYKhgqFvc8l9z7HOmV9F17it+kuEdVd9+jHI/a1zrEtWWbPGmufdtnpbEhUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwtPpG7bV78d9bYanGwuXnx/OzZp9J6r33n8cu0JVHBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDBUMFQwVDB0DTOTt9OMEg9wstwtHqqkWlLooKhgqEPx3ofzCyy39MAAAA9dEVYdGljYzpjb3B5cmlnaHQAQ29weXJpZ2h0IDIwMDcgQXBwbGUgSW5jLiwgYWxsIHJpZ2h0cyByZXNlcnZlZC6eZtwpAAAAI3RFWHRpY2M6ZGVzY3JpcHRpb24AR2VuZXJpYyBSR0IgUHJvZmlsZRqnOI4AAAAASUVORK5CYII=" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">15</td>
+<td style="text-align: left;">Month Name [character]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">1. October</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">2. December</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">3. June</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">4. November</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">5. September</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">6. April</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">7. August</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">8. February</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">9. January</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">10. July</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">[ 2 others ]</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">140</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">20.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">105</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">15.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">35</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">5.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 5px 0 7px; margin: 0; border: 0;">70</td>
+<td style="text-align: left; padding: 0 2px 0 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0; border: 0;">10.0%</td>
+<td style="text-align: left; padding: 0 4px 0 2px; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAACsAAAELCAQAAADqj7fJAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAA9klEQVR42u3bsQ3CMBCGURuxIzvAPLBDpoQ2gLDiRHfipJeO5hW/i/sa+rNFfKcQtRh7Xv94HBr62n+wrV12o0vGCFgsFostzX4cnWWf8vX19VXsu5nWWltLhbe9T3XCbbDZ7k4YP26tbbFYLBabw+qEOHaqE26bV5rohJnnrLUtFovFYnNYnRDH6gQsFovFprEOejlWJ2CxWCw2jdUJcezwoG8/4EP2/aAfeb5a22KxWCw2h9UJcaxOwGKxWGx1VifEsToBi8VisdVZnRDH6gQsFovFVmd1QhyrE7BYLBabxjro5Vh/TMBisVhsGpvRCX8/Qi32BYBAQISf25wMAAAAPXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCAyMDA3IEFwcGxlIEluYy4sIGFsbCByaWdodHMgcmVzZXJ2ZWQunmbcKQAAACN0RVh0aWNjOmRlc2NyaXB0aW9uAEdlbmVyaWMgUkdCIFByb2ZpbGUapziOAAAAAElFTkSuQmCC" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">16</td>
+<td style="text-align: left;">Year [numeric]</td>
+<td style="text-align: left; padding: 8; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Min : 2013</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Mean : 2013.8</td>
+</tr>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: left; padding: 0; margin: 0; border: 0;">Max : 2014</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; padding: 0; vertical-align: middle;"><table class="caption-top" data-quarto-postprocess="true" style="border-collapse:collapse;border:none;margin:0">
+<tbody>
+<tr class="odd" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">2013</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">175</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">25.0%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+<tr class="even" style="background-color:transparent">
+<td style="text-align: right; padding: 0 2px 0 7px; margin: 0; border: 0;">2014</td>
+<td style="text-align: left; padding: 0 2px; border: 0;">:</td>
+<td style="text-align: right; padding: 0 4px 0 6px; margin: 0; border: 0;">525</td>
+<td style="text-align: left; padding: 0; border: 0;">(</td>
+<td style="text-align: right; padding: 0 2px; margin: 0; border: 0;">75.0%</td>
+<td style="text-align: left; padding: 0 4px 0 0; border: 0;">)</td>
+</tr>
+</tbody>
+</table></td>
+<td style="text-align: left; vertical-align: middle; padding: 0; background-color: transparent;"><img data-src="data:image/png;base64,%20iVBORw0KGgoAAAANSUhEUgAAAH0AAAA3CAQAAACLSo2kAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfoDAoAACZOg7vXAAAAo0lEQVRo3u3ZsQ2EMBAAQYzcI0VQD/RAlZCeEQGBwYbdyRDB/0pngnPaB6qx9R8w3fQ35fiwVjz4c2qddiUG5vLVVOknttaNN4AH3nQi04lMJzKdyHQi04lMJzKdyHSi027uCzu1WlLcUXa5RK0q1oIHHpxenPXl/3eP4Uw/dAXRp/IjDh5404lMJzKdyHQi04lMJzKdyHQi04m8giACD7zpRAf2HAxc548emwAAAD10RVh0aWNjOmNvcHlyaWdodABDb3B5cmlnaHQgMjAwNyBBcHBsZSBJbmMuLCBhbGwgcmlnaHRzIHJlc2VydmVkLp5m3CkAAAAjdEVYdGljYzpkZXNjcmlwdGlvbgBHZW5lcmljIFJHQiBQcm9maWxlGqc4jgAAAABJRU5ErkJggg==" style="border:none;background-color:transparent;padding:0;max-width:max-content;"></td>
+<td style="text-align: center;">700 (100.0%)</td>
+<td style="text-align: center;">0 (0.0%)</td>
+</tr>
+</tbody>
+</table>
+
+<p>Generated by <a href="https://github.com/dcomtois/summarytools">summarytools</a> 1.0.1 (<a href="https://www.r-project.org/">R</a> version 4.4.1)<br>2024-12-10</p>
+</div>
+</div>
+</div></section><section id="section-10" class="slide level2" data-background-image="Data_Frame_Summary_1.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-11" class="slide level2" data-background-image="Data_Frame_Summary_2.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-12" class="slide level2" data-background-image="Data_Frame_Summary_3.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-13" class="slide level2">
+<h2></h2>
+<p>Detect outliers</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href=""></a><span class="co"># Function to detect outliers based on IQR</span></span>
+<span id="cb19-2"><a href=""></a>detect_outliers <span class="ot">&lt;-</span> <span class="cf">function</span>(data_column) {</span>
+<span id="cb19-3"><a href=""></a>  Q1 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(data_column, <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-4"><a href=""></a>  Q3 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(data_column, <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-5"><a href=""></a>  IQR_value <span class="ot">&lt;-</span> <span class="fu">IQR</span>(data_column, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-6"><a href=""></a>  </span>
+<span id="cb19-7"><a href=""></a>  <span class="co"># Define outlier thresholds</span></span>
+<span id="cb19-8"><a href=""></a>  lower_bound <span class="ot">&lt;-</span> Q1 <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR_value</span>
+<span id="cb19-9"><a href=""></a>  upper_bound <span class="ot">&lt;-</span> Q3 <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR_value</span>
+<span id="cb19-10"><a href=""></a>  </span>
+<span id="cb19-11"><a href=""></a>  <span class="co"># Identify outliers</span></span>
+<span id="cb19-12"><a href=""></a>  outlier_indices <span class="ot">&lt;-</span> <span class="fu">which</span>(data_column <span class="sc">&lt;</span> lower_bound <span class="sc">|</span> data_column <span class="sc">&gt;</span> upper_bound)</span>
+<span id="cb19-13"><a href=""></a>  num_outliers <span class="ot">&lt;-</span> <span class="fu">length</span>(outlier_indices)</span>
+<span id="cb19-14"><a href=""></a>  total_count <span class="ot">&lt;-</span> <span class="fu">length</span>(data_column)</span>
+<span id="cb19-15"><a href=""></a>  </span>
+<span id="cb19-16"><a href=""></a>  <span class="co"># Calculate the fraction of outliers</span></span>
+<span id="cb19-17"><a href=""></a>  fraction <span class="ot">&lt;-</span> num_outliers <span class="sc">/</span> total_count</span>
+<span id="cb19-18"><a href=""></a>  </span>
+<span id="cb19-19"><a href=""></a>  <span class="fu">return</span>(fraction)</span>
+<span id="cb19-20"><a href=""></a>}</span>
+<span id="cb19-21"><a href=""></a>financials_numeric <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb19-22"><a href=""></a>                      <span class="fu">select</span>(<span class="st">`</span><span class="at">Units Sold</span><span class="st">`</span>, <span class="st">`</span><span class="at">Manufacturing Price</span><span class="st">`</span>, <span class="st">`</span><span class="at">Sale Price</span><span class="st">`</span>, <span class="st">`</span><span class="at">Gross Sales</span><span class="st">`</span>, Discounts, Sales, COGS, Profit)</span>
+<span id="cb19-23"><a href=""></a><span class="co"># Apply the function to each numeric column in the selected data frame</span></span>
+<span id="cb19-24"><a href=""></a>outlier_fractions <span class="ot">&lt;-</span> <span class="fu">sapply</span>(financials_numeric, detect_outliers)</span>
+<span id="cb19-25"><a href=""></a></span>
+<span id="cb19-26"><a href=""></a><span class="co"># Display the fractions of outliers per column</span></span>
+<span id="cb19-27"><a href=""></a><span class="fu">print</span>(outlier_fractions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Units Sold Manufacturing Price          Sale Price         Gross Sales 
+        0.005714286         0.000000000         0.000000000         0.078571429 
+          Discounts               Sales                COGS              Profit 
+        0.107142857         0.075714286         0.051428571         0.138571429 </code></pre>
+</div>
+</div>
+</section>
+<section id="section-14" class="slide level2">
+<h2></h2>
+<p>Looks like all outliers fraction is small compare to data in each column, therefore I’m not going to remove these data</p>
+</section>
+<section id="section-15" class="slide level2">
+<h2></h2>
+<p>How does Sales and Profit change by month?</p>
+<p>Convert date column into “Year-Month” format</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>financials <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href=""></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-3"><a href=""></a>  <span class="co"># Convert 'Date' column from character to Date type</span></span>
+<span id="cb21-4"><a href=""></a>    <span class="at">Date =</span> <span class="fu">dmy</span>(Date),   <span class="co"># Use dmy() for day-month-year format</span></span>
+<span id="cb21-5"><a href=""></a>    <span class="co"># Create a Year-Month column</span></span>
+<span id="cb21-6"><a href=""></a>    <span class="at">YearMonth =</span> <span class="fu">format</span>(Date, <span class="st">"%Y-%b"</span>)  <span class="co"># Format as "2014-Jan"</span></span>
+<span id="cb21-7"><a href=""></a>  )</span>
+<span id="cb21-8"><a href=""></a><span class="fu">head</span>(financials, <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 17
+   Segment    Country Product `Discount Band` `Units Sold` `Manufacturing Price`
+   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                  &lt;dbl&gt;                 &lt;dbl&gt;
+ 1 Government Canada  Carret… None                   1618.                     3
+ 2 Government Germany Carret… None                   1321                      3
+ 3 Midmarket  France  Carret… None                   2178                      3
+ 4 Midmarket  Germany Carret… None                    888                      3
+ 5 Midmarket  Mexico  Carret… None                   2470                      3
+ 6 Government Germany Carret… None                   1513                      3
+ 7 Midmarket  Germany Montana None                    921                      5
+ 8 Channel P… Canada  Montana None                   2518                      5
+ 9 Government France  Montana None                   1899                      5
+10 Channel P… Germany Montana None                   1545                      5
+11 Midmarket  Mexico  Montana None                   2470                      5
+12 Enterprise Canada  Montana None                   2666.                     5
+13 Small Bus… Mexico  Montana None                    958                      5
+14 Government Germany Montana None                   2146                      5
+15 Enterprise Canada  Montana None                    345                      5
+16 Midmarket  United… Montana None                    615                      5
+17 Government Canada  Paseo   None                    292                     10
+18 Midmarket  Mexico  Paseo   None                    974                     10
+19 Channel P… Canada  Paseo   None                   2518                     10
+20 Government Germany Paseo   None                   1006                     10
+# ℹ 11 more variables: `Sale Price` &lt;dbl&gt;, `Gross Sales` &lt;dbl&gt;,
+#   Discounts &lt;dbl&gt;, Sales &lt;dbl&gt;, COGS &lt;dbl&gt;, Profit &lt;dbl&gt;, Date &lt;date&gt;,
+#   `Month Number` &lt;dbl&gt;, `Month Name` &lt;chr&gt;, Year &lt;dbl&gt;, YearMonth &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Summarize Profit and Sales by YearMonth</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>monthly_summary <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href=""></a>  <span class="fu">group_by</span>(YearMonth) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href=""></a>  <span class="fu">summarise</span>(</span>
+<span id="cb23-4"><a href=""></a>    <span class="at">Total_Profit =</span> <span class="fu">sum</span>(Profit, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-5"><a href=""></a>    <span class="at">Total_Sales =</span> <span class="fu">sum</span>(Sales, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-6"><a href=""></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb23-7"><a href=""></a>  <span class="fu">mutate</span>(</span>
+<span id="cb23-8"><a href=""></a>    <span class="co"># Create a proper Date column for sorting</span></span>
+<span id="cb23-9"><a href=""></a>    <span class="at">DateSort =</span> <span class="fu">as.Date</span>(<span class="fu">paste0</span>(YearMonth, <span class="st">"-01"</span>), <span class="at">format =</span> <span class="st">"%Y-%b-%d"</span>)</span>
+<span id="cb23-10"><a href=""></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb23-11"><a href=""></a>  <span class="fu">arrange</span>(DateSort) <span class="sc">|&gt;</span>  <span class="co"># Arrange by DateSort for proper chronological order</span></span>
+<span id="cb23-12"><a href=""></a>  <span class="fu">select</span>(<span class="sc">-</span>DateSort)  <span class="co"># Remove DateSort column if not needed</span></span>
+<span id="cb23-13"><a href=""></a>monthly_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 3
+   YearMonth Total_Profit Total_Sales
+   &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;
+ 1 2013-Sep       812564.    4484000.
+ 2 2013-Oct      1659555.    9295611.
+ 3 2013-Nov       840631.    7267203.
+ 4 2013-Dec       788052.    5368441.
+ 5 2014-Jan       874545.    6607762.
+ 6 2014-Feb      1178511.    7297531.
+ 7 2014-Mar       682158.    5586860.
+ 8 2014-Apr       955826.    6964775.
+ 9 2014-May       885455.    6210211.
+10 2014-Jun      1509371.    9518894.
+11 2014-Jul       941573.    8102920.
+12 2014-Aug       852955.    5864622.
+13 2014-Sep      1068776.    6398697.
+14 2014-Oct      1899813.   12375820.
+15 2014-Nov       660509.    5384214.
+16 2014-Dec      2060728.   11998788.</code></pre>
+</div>
+</div>
+</section>
+<section id="section-16" class="slide level2">
+<h2></h2>
+<p>Ensure YearMonth is in ordered format</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>monthly_summary <span class="ot">&lt;-</span> monthly_summary <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href=""></a>  <span class="fu">mutate</span>(<span class="at">YearMonth =</span> <span class="fu">factor</span>(YearMonth, <span class="at">levels =</span> <span class="fu">unique</span>(YearMonth)))  <span class="co"># Ensures correct order</span></span>
+<span id="cb25-3"><a href=""></a>monthly_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 3
+   YearMonth Total_Profit Total_Sales
+   &lt;fct&gt;            &lt;dbl&gt;       &lt;dbl&gt;
+ 1 2013-Sep       812564.    4484000.
+ 2 2013-Oct      1659555.    9295611.
+ 3 2013-Nov       840631.    7267203.
+ 4 2013-Dec       788052.    5368441.
+ 5 2014-Jan       874545.    6607762.
+ 6 2014-Feb      1178511.    7297531.
+ 7 2014-Mar       682158.    5586860.
+ 8 2014-Apr       955826.    6964775.
+ 9 2014-May       885455.    6210211.
+10 2014-Jun      1509371.    9518894.
+11 2014-Jul       941573.    8102920.
+12 2014-Aug       852955.    5864622.
+13 2014-Sep      1068776.    6398697.
+14 2014-Oct      1899813.   12375820.
+15 2014-Nov       660509.    5384214.
+16 2014-Dec      2060728.   11998788.</code></pre>
+</div>
+</div>
+</section>
+<section id="section-17" class="slide level2">
+<h2></h2>
+<p>Plot Profit and Sales Trends Over Months</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href=""></a><span class="fu">ggplot</span>(monthly_summary, <span class="fu">aes</span>(<span class="at">x =</span> YearMonth)) <span class="sc">+</span></span>
+<span id="cb27-2"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Profit, <span class="at">color =</span> <span class="st">"Profit"</span>), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-3"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Sales, <span class="at">color =</span> <span class="st">"Sales"</span>), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-4"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Profit, <span class="at">color =</span> <span class="st">"Profit"</span>, <span class="at">group =</span> <span class="dv">1</span>), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Sales, <span class="at">color =</span> <span class="st">"Sales"</span>, <span class="at">group =</span> <span class="dv">1</span>), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb27-7"><a href=""></a>    <span class="at">title =</span> <span class="st">"Profit and Sales Trends Over Months"</span>,</span>
+<span id="cb27-8"><a href=""></a>    <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb27-9"><a href=""></a>    <span class="at">y =</span> <span class="st">"Dollar"</span>,</span>
+<span id="cb27-10"><a href=""></a>    <span class="at">color =</span> <span class="st">"Metric"</span></span>
+<span id="cb27-11"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-17-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="financials_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div></section><section id="section-18" class="slide level2">
+<h2></h2>
+<p>In this line chart you can see Sales is going up and down with the highest peaks in October and December in 2014. As well the profit was the highest in these 2 months.</p>
+<p>2013-Sep and 2014-Nov have the lowest Sales, whereas Profit was lowest in March 2014 and November 2014.</p>
+<p>From this chart, we can see Sales fluctuate more over different months compared with Profit.</p>
+</section>
+<section id="section-19" class="slide level2">
+<h2></h2>
+<p>Plot Product vs Gross Sales, Manufacturing Price, Profit, Discount, Sales &amp; COGS Aggregate the Data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href=""></a>financials_product <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb28-2"><a href=""></a>  <span class="fu">group_by</span>(Product) <span class="sc">|&gt;</span> </span>
+<span id="cb28-3"><a href=""></a>  <span class="fu">summarise</span>(</span>
+<span id="cb28-4"><a href=""></a>    <span class="at">Gross_Sales =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Gross Sales</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-5"><a href=""></a>    <span class="at">Manufacturing_Price =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Manufacturing Price</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-6"><a href=""></a>    <span class="at">Profit =</span> <span class="fu">sum</span>(Profit, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-7"><a href=""></a>    <span class="at">Discounts =</span> <span class="fu">sum</span>(Discounts, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-8"><a href=""></a>    <span class="at">Sales =</span> <span class="fu">sum</span>(Sales, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-9"><a href=""></a>    <span class="at">COGS =</span> <span class="fu">sum</span>(COGS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-10"><a href=""></a>  )</span>
+<span id="cb28-11"><a href=""></a>financials_product</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  Product   Gross_Sales Manufacturing_Price   Profit Discounts     Sales    COGS
+  &lt;chr&gt;           &lt;dbl&gt;               &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 Amarilla    19037280.               24440 2936044.  1290163. 17747116.  1.49e7
+2 Carretera   14937520.                 279 2057915.  1122213. 13815308.  1.20e7
+3 Montana     16549834.                 465 2171281.  1159033. 15390802.  1.33e7
+4 Paseo       35611662                 2020 4917987.  2600518. 33011144.  2.82e7
+5 VTT         21968534.               27250 3156348.  1456612. 20511921.  1.75e7
+6 Velo        19826768.               13080 2431449.  1576709. 18250059.  1.59e7</code></pre>
+</div>
+</div>
+</section>
+<section id="section-20" class="slide level2">
+<h2></h2>
+<p>Reshape the data to a long format using <strong>pivot_longer()</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href=""></a>financials_long <span class="ot">&lt;-</span> financials_product <span class="sc">|&gt;</span> </span>
+<span id="cb30-2"><a href=""></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb30-3"><a href=""></a>    <span class="at">cols =</span> <span class="sc">-</span>Product,</span>
+<span id="cb30-4"><a href=""></a>    <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb30-5"><a href=""></a>    <span class="at">values_to =</span> <span class="st">"Value"</span></span>
+<span id="cb30-6"><a href=""></a>  )</span>
+<span id="cb30-7"><a href=""></a>financials_long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 36 × 3
+   Product   Metric                  Value
+   &lt;chr&gt;     &lt;chr&gt;                   &lt;dbl&gt;
+ 1 Amarilla  Gross_Sales         19037280.
+ 2 Amarilla  Manufacturing_Price    24440 
+ 3 Amarilla  Profit               2936044.
+ 4 Amarilla  Discounts            1290163.
+ 5 Amarilla  Sales               17747116.
+ 6 Amarilla  COGS                14933012 
+ 7 Carretera Gross_Sales         14937520.
+ 8 Carretera Manufacturing_Price      279 
+ 9 Carretera Profit               2057915.
+10 Carretera Discounts            1122213.
+# ℹ 26 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="section-21" class="slide level2">
+<h2></h2>
+<p>Create a plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href=""></a><span class="fu">ggplot</span>(financials_long, <span class="fu">aes</span>(<span class="at">x =</span> Product, <span class="at">y =</span> Value, <span class="at">group =</span> Metric, <span class="at">color =</span> Metric)) <span class="sc">+</span></span>
+<span id="cb32-2"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> Metric), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb32-3"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span>  <span class="co"># Optional: add points for better visibility</span></span>
+<span id="cb32-4"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb32-5"><a href=""></a>    <span class="at">title =</span> <span class="st">"Product vs Gross Sales, Manufacturing Price, Profit, Discounts, Sales &amp; COGS"</span>,</span>
+<span id="cb32-6"><a href=""></a>    <span class="at">x =</span> <span class="st">"Product"</span>,</span>
+<span id="cb32-7"><a href=""></a>    <span class="at">y =</span> <span class="st">"Value"</span>,</span>
+<span id="cb32-8"><a href=""></a>    <span class="at">color =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb32-9"><a href=""></a>    <span class="at">linetype =</span> <span class="st">"Metric"</span></span>
+<span id="cb32-10"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb32-11"><a href=""></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))  <span class="co"># Rotate x-axis labels for readability</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-21-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="financials_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div></section><section id="section-22" class="slide level2">
+<h2></h2>
+<p>This line chart showed that COGS, Sales and Gross_Sales change together, whereas Profit, Discounts and Manufacturing Price fluctuate the same way. Among all 6 products, Paseo peaks in all metrics, whereas Carretera is at trough across metrics</p>
+</section>
+<section id="section-23" class="slide level2">
+<h2></h2>
+<p>Plot Country vs Gross Sales, Manufacturing Price, Profit, Discount, Sales &amp; COGS Aggregate the Data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href=""></a>financials_country <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href=""></a>  <span class="fu">group_by</span>(Country) <span class="sc">|&gt;</span> </span>
+<span id="cb33-3"><a href=""></a>  <span class="fu">summarise</span>(</span>
+<span id="cb33-4"><a href=""></a>    <span class="at">Gross_Sales =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Gross Sales</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-5"><a href=""></a>    <span class="at">Manufacturing_Price =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Manufacturing Price</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-6"><a href=""></a>    <span class="at">Profit =</span> <span class="fu">sum</span>(Profit, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-7"><a href=""></a>    <span class="at">Discounts =</span> <span class="fu">sum</span>(Discounts, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-8"><a href=""></a>    <span class="at">Sales =</span> <span class="fu">sum</span>(Sales, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-9"><a href=""></a>    <span class="at">COGS =</span> <span class="fu">sum</span>(COGS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-10"><a href=""></a>  )</span>
+<span id="cb33-11"><a href=""></a>financials_country</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 7
+  Country         Gross_Sales Manufacturing_Price Profit Discounts  Sales   COGS
+  &lt;chr&gt;                 &lt;dbl&gt;               &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1 Canada            26932164.               13150 3.69e6  2044509. 2.49e7 2.14e7
+2 France            26081674.               13374 3.91e6  1727502. 2.44e7 2.06e7
+3 Germany           24921468.               13370 3.82e6  1416127. 2.35e7 1.98e7
+4 Mexico            22726935                13394 3.05e6  1777583. 2.09e7 1.80e7
+5 United States …   27269358                14246 3.20e6  2239528. 2.50e7 2.20e7</code></pre>
+</div>
+</div>
+</section>
+<section id="section-24" class="slide level2">
+<h2></h2>
+<p>Reshape the data to a long format using <strong>pivot_longer()</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href=""></a>financials_long_country <span class="ot">&lt;-</span> financials_country <span class="sc">|&gt;</span> </span>
+<span id="cb35-2"><a href=""></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb35-3"><a href=""></a>    <span class="at">cols =</span> <span class="sc">-</span>Country,</span>
+<span id="cb35-4"><a href=""></a>    <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb35-5"><a href=""></a>    <span class="at">values_to =</span> <span class="st">"Value"</span></span>
+<span id="cb35-6"><a href=""></a>  )</span>
+<span id="cb35-7"><a href=""></a>financials_long_country</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 30 × 3
+   Country Metric                  Value
+   &lt;chr&gt;   &lt;chr&gt;                   &lt;dbl&gt;
+ 1 Canada  Gross_Sales         26932164.
+ 2 Canada  Manufacturing_Price    13150 
+ 3 Canada  Profit               3693718.
+ 4 Canada  Discounts            2044509.
+ 5 Canada  Sales               24887655.
+ 6 Canada  COGS                21358426 
+ 7 France  Gross_Sales         26081674.
+ 8 France  Manufacturing_Price    13374 
+ 9 France  Profit               3906755.
+10 France  Discounts            1727502.
+# ℹ 20 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="section-25" class="slide level2">
+<h2></h2>
+<p>Create a country plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href=""></a><span class="fu">ggplot</span>(financials_long_country, <span class="fu">aes</span>(<span class="at">x =</span> Country, <span class="at">y =</span> Value, <span class="at">group =</span> Metric, <span class="at">color =</span> Metric)) <span class="sc">+</span></span>
+<span id="cb37-2"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> Metric), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb37-3"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span>  <span class="co"># Optional: add points for better visibility</span></span>
+<span id="cb37-4"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb37-5"><a href=""></a>    <span class="at">title =</span> <span class="st">"Country vs Gross Sales, Manufacturing Price, Profit, Discounts, Sales &amp; COGS"</span>,</span>
+<span id="cb37-6"><a href=""></a>    <span class="at">x =</span> <span class="st">"Country"</span>,</span>
+<span id="cb37-7"><a href=""></a>    <span class="at">y =</span> <span class="st">"Value"</span>,</span>
+<span id="cb37-8"><a href=""></a>    <span class="at">color =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb37-9"><a href=""></a>    <span class="at">linetype =</span> <span class="st">"Metric"</span></span>
+<span id="cb37-10"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb37-11"><a href=""></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))  <span class="co"># Rotate x-axis labels for readability</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-25-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="financials_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div></section><section id="section-26" class="slide level2">
+<h2></h2>
+<p>Similarly with previous line chart, COGS, Sales and Gross_Sales seems move together for different countries, whereas Profit, Discounts and Manufacturing Price are in the same cluster. In this chart, US seems have the highest COGS, Sales and Gross Sales whereas Mexico seems have lowest metrics regarding COGS, Sales and Gross Sales. The Profit, Discounts and Manufacturing Price doesn’t change much across different countries. ## Correlation Analysis Select interested columns</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href=""></a>selected_columns <span class="ot">&lt;-</span> financials[, <span class="fu">c</span>(<span class="st">"Country"</span>, <span class="st">"Profit"</span>, <span class="st">"Sales"</span>, <span class="st">"COGS"</span>, <span class="st">"Gross Sales"</span>, <span class="st">"Sale Price"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="section-27" class="slide level2">
+<h2></h2>
+<p>Generate pairwise correlation plots in different Countries</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href=""></a><span class="fu">ggpairs</span>(</span>
+<span id="cb39-2"><a href=""></a>  <span class="at">data =</span> selected_columns,</span>
+<span id="cb39-3"><a href=""></a>  <span class="fu">aes</span>(<span class="at">color =</span> Country, <span class="at">alpha =</span> <span class="fl">0.6</span>),</span>
+<span id="cb39-4"><a href=""></a>  <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"cor"</span>, <span class="at">size =</span> <span class="dv">3</span>)),</span>
+<span id="cb39-5"><a href=""></a>  <span class="at">lower =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"smooth"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>)),</span>
+<span id="cb39-6"><a href=""></a>  <span class="at">diag =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"densityDiag"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>))</span>
+<span id="cb39-7"><a href=""></a>) <span class="sc">+</span></span>
+<span id="cb39-8"><a href=""></a>  <span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="financials_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
+<section id="section-28" class="slide level2">
+<h2></h2>
+<p>Generate pairwise plots in different Products</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href=""></a>selected_columns_product <span class="ot">&lt;-</span> financials[, <span class="fu">c</span>(<span class="st">"Product"</span>, <span class="st">"Profit"</span>, <span class="st">"Sales"</span>, <span class="st">"COGS"</span>, <span class="st">"Gross Sales"</span>, <span class="st">"Sale Price"</span>)]</span>
+<span id="cb40-2"><a href=""></a><span class="fu">ggpairs</span>(</span>
+<span id="cb40-3"><a href=""></a>  <span class="at">data =</span> selected_columns_product,</span>
+<span id="cb40-4"><a href=""></a>  <span class="fu">aes</span>(<span class="at">color =</span> Product, <span class="at">alpha =</span> <span class="fl">0.6</span>),</span>
+<span id="cb40-5"><a href=""></a>  <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"cor"</span>, <span class="at">size =</span> <span class="dv">3</span>)),</span>
+<span id="cb40-6"><a href=""></a>  <span class="at">lower =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"smooth"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>)),</span>
+<span id="cb40-7"><a href=""></a>  <span class="at">diag =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"densityDiag"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>))</span>
+<span id="cb40-8"><a href=""></a>) <span class="sc">+</span></span>
+<span id="cb40-9"><a href=""></a>  <span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="financials_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch"></section>
+<section id="section-29" class="slide level2">
+<h2></h2>
+<p>This pairwise correlation plots in different Products is very similar with the previous plot in different Country, where Sales vs COGS, Sales vs Gross Sales and COGS vs Gross Sales has much higher correlation coefficient both in graph and numbers</p>
+</section>
+<section id="section-30" class="slide level2">
+<h2></h2>
+<p>Generate a rmd report for selected columns</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href=""></a>financials_report <span class="ot">&lt;-</span> financials <span class="sc">|&gt;</span> </span>
+<span id="cb41-2"><a href=""></a>  <span class="fu">select</span>(Profit, Sales, COGS, <span class="st">`</span><span class="at">Gross Sales</span><span class="st">`</span>, <span class="st">`</span><span class="at">Sale Price</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb41-3"><a href=""></a>  <span class="fu">relocate</span>(Profit, COGS) <span class="sc">|&gt;</span> </span>
+<span id="cb41-4"><a href=""></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Profit)) </span>
+<span id="cb41-5"><a href=""></a>data_profiling_report <span class="ot">&lt;-</span> <span class="fu">create_report</span>(financials_report)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section>
+<section id="section-30-output" class="slide level2 output-location-slide"><h2></h2><div class="cell output-location-slide">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |                                     |   0%
+  |                                           
+  |.                                    |   2%                                 
+  |                                           
+  |..                                   |   5% [global_options]                
+  |                                           
+  |...                                  |   7%                                 
+  |                                           
+  |....                                 |  10% [introduce]                     
+  |                                           
+  |....                                 |  12%                                 
+  |                                           
+  |.....                                |  14% [plot_intro]                    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |......                               |  17%                                 
+  |                                           
+  |.......                              |  19% [data_structure]                
+  |                                           
+  |........                             |  21%                                 
+  |                                           
+  |.........                            |  24% [missing_profile]               </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |..........                           |  26%                                 
+  |                                           
+  |...........                          |  29% [univariate_distribution_header]
+  |                                           
+  |...........                          |  31%                                 
+  |                                           
+  |............                         |  33% [plot_histogram]                </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |.............                        |  36%                                 
+  |                                           
+  |..............                       |  38% [plot_density]                  
+  |                                           
+  |...............                      |  40%                                 
+  |                                           
+  |................                     |  43% [plot_frequency_bar]            
+  |                                           
+  |.................                    |  45%                                 
+  |                                           
+  |..................                   |  48% [plot_response_bar]             
+  |                                           
+  |..................                   |  50%                                 
+  |                                           
+  |...................                  |  52% [plot_with_bar]                 
+  |                                           
+  |....................                 |  55%                                 
+  |                                           
+  |.....................                |  57% [plot_normal_qq]                </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |......................               |  60%                                 
+  |                                           
+  |.......................              |  62% [plot_response_qq]              
+  |                                           
+  |........................             |  64%                                 
+  |                                           
+  |.........................            |  67% [plot_by_qq]                    
+  |                                           
+  |..........................           |  69%                                 
+  |                                           
+  |..........................           |  71% [correlation_analysis]          </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |...........................          |  74%                                 
+  |                                           
+  |............................         |  76% [principal_component_analysis]  </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                           
+  |.............................        |  79%                                 
+  |                                           
+  |..............................       |  81% [bivariate_distribution_header] 
+  |                                           
+  |...............................      |  83%                                 
+  |                                           
+  |................................     |  86% [plot_response_boxplot]         
+  |                                           
+  |.................................    |  88%                                 
+  |                                           
+  |.................................    |  90% [plot_by_boxplot]               
+  |                                           
+  |..................................   |  93%                                 
+  |                                           
+  |...................................  |  95% [plot_response_scatterplot]     
+  |                                           
+  |.................................... |  98%                                 
+  |                                           
+  |.....................................| 100% [plot_by_scatterplot]           
+                                                                                                                           </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/pandoc +RTS -K512m -RTS /Users/na/Documents/R_course/Scripts/DSScripts/report.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output /Users/na/Documents/R_course/Scripts/DSScripts/report.html --lua-filter /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable 'mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' --include-in-header /var/folders/c0/ddsf7qt52dq_2kkrtqpxzs4m0000gn/T//Rtmpod4nIF/rmarkdown-strf7aa3bb523a0.html </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href=""></a>data_profiling_report</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div></section><section id="section-31" class="slide level2" data-background-image="Data_Profiling_Report_1.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-32" class="slide level2" data-background-image="Data_Profiling_Report_2.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-33" class="slide level2" data-background-image="Data_Profiling_Report_3.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-34" class="slide level2" data-background-image="Data_Profiling_Report_4.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-35" class="slide level2" data-background-image="Data_Profiling_Report_5.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-36" class="slide level2" data-background-image="Data_Profiling_Report_6.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-37" class="slide level2" data-background-image="Data_Profiling_Report_7.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-38" class="slide level2" data-background-image="Data_Profiling_Report_8.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-39" class="slide level2" data-background-image="Data_Profiling_Report_9.png" data-background-size="contain">
+<h2></h2>
+</section>
+<section id="section-40" class="slide level2">
+<h2></h2>
+<p>As shown in the univariate distribution graph, Sale Price is much more dispersed than other variables. Correlation Analysis shows that there’s much higher correlation between each pair of Gross Sales, Sales and COGS, which generates the similar conclusion with previous pairwise correlation plots</p>
+<div class="quarto-auto-generated-content">
+<div class="footer footer-default">
+<p>Data Source:https://www.kaggle.com/datasets/atharvaarya25/financials/data</p>
+</div>
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="financials_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="financials_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="financials_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="financials_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+       // Parallax background image
+       parallaxBackgroundImage: 'background_2.jpg', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
